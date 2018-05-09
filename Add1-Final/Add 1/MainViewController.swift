@@ -11,140 +11,124 @@ class MainViewController: UIViewController
 {
     @IBOutlet weak var numbersLabel:UILabel?
     @IBOutlet weak var scoreLabel:UILabel?
-    @IBOutlet weak var inputField:UITextField?
+    @IBOutlet weak var userInput:UITextField?
     @IBOutlet weak var timeLabel:UILabel?
     
-    var score:Int = 0
+    var userScore:Int = 0
     var timer:Timer?
     var seconds:Int = 15
     
     var hud:MBProgressHUD?
     
-    override func viewDidLoad()
-    {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
-        setRandomNumberLabel()
+        setupRandomNumberLabel()
         updateScoreLabel()
         updateTimeLabel()
         
         hud = MBProgressHUD(view:self.view)
         
-        if(hud != nil)
-        {
+        if(hud != nil) {
             self.view.addSubview(hud!)
         }
         
-        inputField?.addTarget(self, action: #selector(textFieldDidChange(textField:)), for:UIControlEvents.editingChanged)
+        userInput?.addTarget(self, action: #selector(textDidChange(textField:)), for:UIControlEvents.editingChanged)
     }
     
-    @objc func textFieldDidChange(textField:UITextField)
-    {
-        if inputField?.text?.characters.count ?? 0 < 4
-        {
+    @objc func textDidChange(textField:UITextField) {
+        if userInput?.text?.count ?? 0 < 4 {
             return
         }
         
-        if  let numbers_text    = numbersLabel?.text,
-            let input_text      = inputField?.text,
-            let numbers         = Int(numbers_text),
-            let input           = Int(input_text)
+        if  let numberLabel    = numbersLabel?.text,
+            let userInputText      = userInput?.text,
+            let number         = Int(numberLabel),
+            let userInput           = Int(userInputText)
         {
-            print("Comparing: \(input_text) minus \(numbers_text) == \(input - numbers)")
+            print("Comparing: \(userInputText) minus \(numberLabel) == \(userInput - number)")
             
-            if(input - numbers == 1111)
-            {
+            if(userInput - number == 1111) {
                 print("Correct!")
                 
-                score += 1
+                userScore += 1
                 
-                showHUDWithAnswer(isRight: true)
+                show(isRight: true)
             }
-            else
-            {
+            else {
                 print("Incorrect!")
                 
-                score -= 1
+                userScore -= 1
                 
-                showHUDWithAnswer(isRight: false)
+                show(isRight: false)
             }
         }
         
-        setRandomNumberLabel()
+        setupRandomNumberLabel()
         updateScoreLabel()
         
-        if(timer == nil)
-        {
-            timer = Timer.scheduledTimer(timeInterval: 1.0, target:self, selector:#selector(onUpdateTimer), userInfo:nil, repeats:true)
+        if(timer == nil) {
+            timer = Timer.scheduledTimer(timeInterval: 1.0, target:self, selector:#selector(onTimeUpdate), userInfo:nil, repeats:true)
         }
     }
     
-    @objc func onUpdateTimer()
+    @objc func onTimeUpdate()
     {
-        if(seconds > 0 && seconds <= 60)
-        {
+        if(seconds > 0 && seconds <= 60) {
             seconds -= 1
             
             updateTimeLabel()
         }
-        else if(seconds == 0)
-        {
-            if(timer != nil)
-            {
+        else if(seconds == 0) {
+            if(timer != nil) {
                 timer!.invalidate()
                 timer = nil
                 
-                let alertController = UIAlertController(title: "Time Up!", message: "Your time is up! You got a score of: \(score) points. Very good!", preferredStyle: .alert)
+                let alertController = UIAlertController(title: "Time Up!", message: "Your time is up! You got a score of: \(userScore) points. Very good!", preferredStyle: .alert)
                 let restartAction = UIAlertAction(title: "Restart", style: .default, handler: nil)
                 alertController.addAction(restartAction)
                 
                 self.present(alertController, animated: true, completion: nil)
                 
-                score = 0
+                userScore = 0
                 seconds = 60
                 
                 updateTimeLabel()
                 updateScoreLabel()
-                setRandomNumberLabel()
+                setupRandomNumberLabel()
             }   
         }  
     }
     
-    func updateTimeLabel()
-    {
-        if(timeLabel != nil)
-        {
-            let min:Int = (seconds / 60) % 60
-            let sec:Int = seconds % 60
+    func updateTimeLabel() {
+        if(timeLabel != nil) {
+            let minutes:Int = (seconds / 60) % 60
+            let second:Int = seconds % 60
             
-            let min_p:String = String(format: "%02d", min)
-            let sec_p:String = String(format: "%02d", sec)
+            let minutesPassed:String = String(format: "%02d", minutes)
+            let secondsPassed:String = String(format: "%02d", second)
             
-            timeLabel!.text = "\(min_p):\(sec_p)"
+            timeLabel!.text = "\(minutesPassed):\(secondsPassed)"
         }
     }
     
-    func showHUDWithAnswer(isRight:Bool)
-    {
+    func show(isRight:Bool) {
         var imageView:UIImageView?
         
-        if isRight
-        {
+        if isRight {
             imageView = UIImageView(image: UIImage(named:"thumbs-up"))
         }
-        else
-        {
+        else {
             imageView = UIImageView(image: UIImage(named:"thumbs-down"))
         }
         
-        if(imageView != nil)
-        {
+        if(imageView != nil) {
             hud?.mode = MBProgressHUDMode.customView
             hud?.customView = imageView
             
             hud?.show(animated: true)
             
-            self.inputField?.text = ""
+            self.userInput?.text = ""
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 self.hud?.hide(animated: true)
@@ -152,32 +136,28 @@ class MainViewController: UIViewController
         }
     }
     
-    func updateScoreLabel()
-    {
-        scoreLabel?.text = "\(score)"
+    func updateScoreLabel() {
+        scoreLabel?.text = "\(userScore)"
     }
     
-    func setRandomNumberLabel()
-    {
-        numbersLabel?.text = generateRandomNumber()
+    func setupRandomNumberLabel() {
+        numbersLabel?.text = getRandomNumber()
     }
     
-    func generateRandomNumber() -> String
-    {
-        var result:String = ""
+    func getRandomNumber() -> String {
+        var randomNumber:String = ""
         
         for _ in 1...4
         {
             let digit:Int = Int(arc4random_uniform(8) + 1)
             
-            result += "\(digit)"
+            randomNumber += "\(digit)"
         }
         
-        return result  
+        return randomNumber  
     }
 
-    override func didReceiveMemoryWarning()
-    {
+    override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
