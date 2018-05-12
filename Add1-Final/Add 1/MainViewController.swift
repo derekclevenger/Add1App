@@ -17,6 +17,8 @@ class MainViewController: UIViewController
     var userScore:Int = 0
     var timer:Timer?
     var seconds:Int = 15
+    var count = 2
+    var numberToCheck = 11
     
     var hud:MBProgressHUD?
     
@@ -37,7 +39,7 @@ class MainViewController: UIViewController
     }
     
     @objc func textDidChange(textField:UITextField) {
-        if userInput?.text?.count ?? 0 < 4 {
+        if userInput?.text?.count ?? 0 < count - 1 {
             return
         }
         
@@ -48,9 +50,8 @@ class MainViewController: UIViewController
         {
             print("Comparing: \(userInputText) minus \(numberLabel) == \(userInput - number)")
             
-            if(userInput - number == 1111) {
-                print("Correct!")
-                
+            if(userInput - number == numberToCheck) {
+                print(userInput - number)
                 userScore += 1
                 
                 show(isRight: true)
@@ -62,10 +63,13 @@ class MainViewController: UIViewController
                 
                 show(isRight: false)
             }
+            
         }
         
+        getNumberToCheck()
         setupRandomNumberLabel()
         updateScoreLabel()
+       
         
         if(timer == nil) {
             timer = Timer.scheduledTimer(timeInterval: 1.0, target:self, selector:#selector(onTimeUpdate), userInfo:nil, repeats:true)
@@ -92,7 +96,7 @@ class MainViewController: UIViewController
                 
                 userScore = 0
                 seconds = 60
-                
+                count = 2
                 updateTimeLabel()
                 updateScoreLabel()
                 setupRandomNumberLabel()
@@ -147,16 +151,31 @@ class MainViewController: UIViewController
     func getRandomNumber() -> String {
         var randomNumber:String = ""
         
-        for _ in 1...4
+        for _ in 1...count
         {
             let digit:Int = Int(arc4random_uniform(8) + 1)
             
+            
             randomNumber += "\(digit)"
         }
-        
+        count = count != 5 ? count + 1 : 5
+//        count = count + 1
         return randomNumber  
     }
 
+    func getNumberToCheck()  {
+        var randomNum:String = ""
+        
+        for _ in 1...count
+        {
+            let digit:Int = Int(arc4random_uniform(1) + 1)
+
+            randomNum += "\(digit)"
+        }
+        numberToCheck = Int(randomNum)!
+      
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
