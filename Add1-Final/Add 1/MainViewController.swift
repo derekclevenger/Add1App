@@ -39,15 +39,15 @@ class MainViewController: UIViewController
     }
     
     @objc func textDidChange(textField:UITextField) {
-        if userInput?.text?.count ?? 0 < count - 1 {
-            return
-        }
         
+        if userInput?.text?.count == count {
         if  let numberLabel    = numbersLabel?.text,
             let userInputText      = userInput?.text,
             let number         = Int(numberLabel),
             let userInput           = Int(userInputText)
         {
+            count = count != 5 ? count + 1 : 5
+
             print("Comparing: \(userInputText) minus \(numberLabel) == \(userInput - number)")
             
             if(userInput - number == numberToCheck) {
@@ -69,10 +69,11 @@ class MainViewController: UIViewController
         getNumberToCheck()
         setupRandomNumberLabel()
         updateScoreLabel()
-       
         
-        if(timer == nil) {
-            timer = Timer.scheduledTimer(timeInterval: 1.0, target:self, selector:#selector(onTimeUpdate), userInfo:nil, repeats:true)
+        
+            if(timer == nil) {
+                timer = Timer.scheduledTimer(timeInterval: 1.0, target:self, selector:#selector(onTimeUpdate), userInfo:nil, repeats:true)
+            }
         }
     }
     
@@ -80,7 +81,6 @@ class MainViewController: UIViewController
     {
         if(seconds >= 0 && seconds < 15) {
             seconds += 1
-            
             updateTimeLabel()
         }
         else if(seconds == 15) {
@@ -159,7 +159,6 @@ class MainViewController: UIViewController
             randomNumber += "\(digit)"
         }
         
-        count = count != 5 ? count + 1 : 5
         return randomNumber
     }
 
@@ -173,7 +172,6 @@ class MainViewController: UIViewController
             randomNum += "\(digit)"
         }
         numberToCheck = Int(randomNum)!
-      
     }
     
     override func didReceiveMemoryWarning() {
