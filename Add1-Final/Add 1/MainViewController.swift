@@ -16,7 +16,7 @@ class MainViewController: UIViewController
     
     var userScore:Int = 0
     var timer:Timer?
-    var seconds:Int = 15
+    var seconds:Int = 0
     var count = 2
     var numberToCheck = 11
     
@@ -51,7 +51,7 @@ class MainViewController: UIViewController
             print("Comparing: \(userInputText) minus \(numberLabel) == \(userInput - number)")
             
             if(userInput - number == numberToCheck) {
-                print(userInput - number)
+               
                 userScore += 1
                 
                 show(isRight: true)
@@ -78,12 +78,12 @@ class MainViewController: UIViewController
     
     @objc func onTimeUpdate()
     {
-        if(seconds > 0 && seconds <= 60) {
-            seconds -= 1
+        if(seconds >= 0 && seconds < 15) {
+            seconds += 1
             
             updateTimeLabel()
         }
-        else if(seconds == 0) {
+        else if(seconds == 15) {
             if(timer != nil) {
                 timer!.invalidate()
                 timer = nil
@@ -95,7 +95,7 @@ class MainViewController: UIViewController
                 self.present(alertController, animated: true, completion: nil)
                 
                 userScore = 0
-                seconds = 60
+                seconds = 0
                 count = 2
                 updateTimeLabel()
                 updateScoreLabel()
@@ -158,9 +158,9 @@ class MainViewController: UIViewController
             
             randomNumber += "\(digit)"
         }
+        
         count = count != 5 ? count + 1 : 5
-//        count = count + 1
-        return randomNumber  
+        return randomNumber
     }
 
     func getNumberToCheck()  {
