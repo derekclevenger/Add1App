@@ -19,7 +19,8 @@ class MainViewController: UIViewController
     var seconds:Int = 0
     var count = 2
     var numberToCheck = 11
-    
+    var bonus = false
+    var bonusCounter = 0
     var hud:MBProgressHUD?
     
     override func viewDidLoad() {
@@ -39,7 +40,8 @@ class MainViewController: UIViewController
     }
     
     @objc func textDidChange(textField:UITextField) {
-        
+        //TODO make it so that the game ends and stops the timer after 5.  Add the score plus remaining time.  Change don't want to try and
+        // do the bonus of time plus score.  the math would get fuzzy due to wrongs?
         if userInput?.text?.count == count {
         if  let numberLabel    = numbersLabel?.text,
             let userInputText      = userInput?.text,
@@ -47,7 +49,7 @@ class MainViewController: UIViewController
             let userInput           = Int(userInputText)
         {
             count = count != 5 ? count + 1 : 5
-
+            bonusCounter += 1
             print("Comparing: \(userInputText) minus \(numberLabel) == \(userInput - number)")
             
             if(userInput - number == numberToCheck) {
@@ -87,7 +89,9 @@ class MainViewController: UIViewController
             if(timer != nil) {
                 timer!.invalidate()
                 timer = nil
-                
+                if(bonus == true) {
+                    userScore = userScore * 2
+                }
                 let alertController = UIAlertController(title: "Time Up!", message: "Your time is up! You got a score of: \(userScore) points. Very good!", preferredStyle: .alert)
                 let restartAction = UIAlertAction(title: "Restart", style: .default, handler: nil)
                 alertController.addAction(restartAction)
@@ -97,6 +101,7 @@ class MainViewController: UIViewController
                 userScore = 0
                 seconds = 0
                 count = 2
+                bonus = false
                 updateTimeLabel()
                 updateScoreLabel()
                 setupRandomNumberLabel()
@@ -105,6 +110,13 @@ class MainViewController: UIViewController
     }
     
     func updateTimeLabel() {
+        if(bonusCounter == 5 && userScore != 0) {
+            bonus = true
+            seconds = 15
+        }
+        if(bonusCounter == 5) {
+            seconds = 15
+        }
         if(timeLabel != nil) {
             let minutes:Int = (seconds / 60) % 60
             let second:Int = seconds % 60
@@ -142,6 +154,7 @@ class MainViewController: UIViewController
     
     func updateScoreLabel() {
         scoreLabel?.text = "\(userScore)"
+       
     }
     
     func setupRandomNumberLabel() {
