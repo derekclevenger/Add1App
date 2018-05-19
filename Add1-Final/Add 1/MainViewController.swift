@@ -20,7 +20,7 @@ class MainViewController: UIViewController
     var count = 2
     var numberToCheck = 11
     var bonus = false
-    var bonusCounter = 0
+    var bonusCounter = 1
     var hud:MBProgressHUD?
     
     override func viewDidLoad() {
@@ -40,8 +40,7 @@ class MainViewController: UIViewController
     }
     
     @objc func textDidChange(textField:UITextField) {
-        //TODO make it so that the game ends and stops the timer after 5.  Add the score plus remaining time.  Change don't want to try and
-        // do the bonus of time plus score.  the math would get fuzzy due to wrongs?
+
         if userInput?.text?.count == count {
         if  let numberLabel    = numbersLabel?.text,
             let userInputText      = userInput?.text,
@@ -89,7 +88,7 @@ class MainViewController: UIViewController
             if(timer != nil) {
                 timer!.invalidate()
                 timer = nil
-                if(bonus == true) {
+                if(userScore > 0) {
                     userScore = userScore * 2
                 }
                 let alertController = UIAlertController(title: "Time Up!", message: "Your time is up! You got a score of: \(userScore) points. Very good!", preferredStyle: .alert)
@@ -97,10 +96,13 @@ class MainViewController: UIViewController
                 alertController.addAction(restartAction)
                 
                 self.present(alertController, animated: true, completion: nil)
-                
+                //TODO fix score on end of game
+                //TODO Thumbs down on the first one.
                 userScore = 0
                 seconds = 0
                 count = 2
+                bonusCounter = 1
+                numberToCheck = 11
                 bonus = false
                 updateTimeLabel()
                 updateScoreLabel()
