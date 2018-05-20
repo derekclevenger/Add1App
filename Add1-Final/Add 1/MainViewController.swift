@@ -96,8 +96,6 @@ class MainViewController: UIViewController
                 alertController.addAction(restartAction)
                 
                 self.present(alertController, animated: true, completion: nil)
-                //TODO fix score on end of game
-                //TODO Thumbs down on the first one.
                 userScore = 0
                 seconds = 0
                 count = 2
